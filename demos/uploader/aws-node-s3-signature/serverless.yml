@@ -1,0 +1,53 @@
+service: aws-node-s3-signature
+#app: your-app-name
+#tenant: your-tenant-name
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  timeout: 30
+  region: us-east-1
+  stage: ${self:custom.config.NODE_ENV}
+  environment:
+    NODE_ENV: ${self:custom.config.NODE_ENV}
+    BUCKET_NAME: ${self:custom.config.BUCKET_NAME}
+
+custom:
+  config: ${file(config.${opt:stage, 'dev'}.json)}
+
+iamRoleStatements:
+  - Effect: "Allow"
+    Action:
+      - "s3:ListBucket"
+    Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+  - Effect: "Allow"
+    Action:
+      - "s3:PutObject"
+    Resource:
+      Fn::Join:
+        - ""
+        - - "arn:aws:s3:::"
+          - "Ref" : "ServerlessDeploymentBucket"
+          - "/*"
+
+functions:
+  sign:
+    handler: handler.sign
+    events:
+      - http:
+          path: /sign
+          method: get
+          cors:
+            origin: '*' # <-- Specify allowed origin
+            headers: # <-- Specify allowed headers
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - exclusivestartkey
+            allowCredentials: false
+
+plugins:
+  - serverless-offline
