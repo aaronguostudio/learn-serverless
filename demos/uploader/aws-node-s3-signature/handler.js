@@ -2,7 +2,9 @@
 
 const AWS = require('aws-sdk')
 const uuidv4 = require('uuid/v4')
-const s3 = new AWS.S3()
+const s3 = new AWS.S3({
+  signatureVersion: 'v4',
+})
 const bucket = process.env.BUCKET_NAME
 
 module.exports.sign = async event => {
@@ -20,7 +22,6 @@ const getUploadUrl = async function () {
     Bucket: bucket,
     Key: `${actionId}.jpg`,
     ContentType: 'image/jpg',
-    CacheControl: 'max-age=31104000',
     ACL: 'public-read'
   }
 
