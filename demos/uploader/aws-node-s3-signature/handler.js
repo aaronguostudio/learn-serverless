@@ -17,6 +17,8 @@ module.exports.sign = async event => {
 const getUploadUrl = async function () {
   console.log('getUploadURL started')
 
+  // TODO adding authentication for the endpoint
+
   const actionId = uuidv4()
   const params = {
     Bucket: bucket,
