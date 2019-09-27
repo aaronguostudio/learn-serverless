@@ -5,7 +5,7 @@ service: aws-node-s3-signature
 provider:
   name: aws
   runtime: nodejs10.x
-  timeout: 30
+  timeout: 28
   region: us-east-1
   stage: ${self:custom.config.NODE_ENV}
   environment:

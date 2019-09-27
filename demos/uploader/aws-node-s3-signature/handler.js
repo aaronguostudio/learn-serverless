@@ -23,7 +23,7 @@ const getUploadUrl = async function () {
   const params = {
     Bucket: bucket,
     Key: `${actionId}.jpg`,
-    ContentType: 'image/jpg',
+    ContentType: 'multipart/form-data',
     ACL: 'public-read'
   }
 
