@@ -6,24 +6,32 @@ const s3 = new AWS.S3({
   signatureVersion: 'v4',
 })
 const bucket = process.env.BUCKET_NAME
+const allowTypes = ['jpg', 'jpeg', 'png']
+const allowPaths = ['avatars', 'companies']
 
 module.exports.sign = async event => {
-  console.log('> Start...')
-  const result = await getUploadUrl()
-  console.log('> Result: ', result)
-  return result
+  const { type, path = 'default' } = event.queryStringParameters
+  return await getUploadUrl(type, path)
 }
 
-const getUploadUrl = async function () {
-  console.log('getUploadURL started')
-
-  // TODO adding authentication for the endpoint
-
+const getUploadUrl = async function (imageType, path) {
   const actionId = uuidv4()
+  if (!allowTypes.includes(imageType)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify('Only jpg, jpeg and png are supported')
+    }
+  }
+  if (!allowPaths.includes(path)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify('Only path of avatars and companies are allowed')
+    }
+  }
   const params = {
     Bucket: bucket,
-    Key: `${actionId}.jpg`,
-    ContentType: 'multipart/form-data',
+    Key: `${path}/${actionId}.${imageType}`,
+    ContentType: 'image/*',
     ACL: 'public-read'
   }
 
@@ -38,12 +46,11 @@ const getUploadUrl = async function () {
         },
         body: JSON.stringify({
             uploadUrl,
-            filename: `${actionId}.jpg`
+            filename: `/avatars/${actionId}.${imageType}`
         })
       })
     } catch (err) {
-
-      console.log('> error', err)
+      console.log('> uploading error', err)
       reject({
         statusCode: 500,
         isBase64Encoded: false,
