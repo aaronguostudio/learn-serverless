@@ -1,0 +1,37 @@
+service: email-service
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "ses:SendTemplatedEmail"
+        - "ses:CreateTemplate"
+      Resource: "*"
+
+functions:
+  health:
+    handler: handlers/health.handler
+    events:
+      - http:
+          path: /emails/health
+          method: get
+          cors: true
+  send:
+    handler: handlers/send.handler
+    events:
+      - http:
+          path: /emails
+          method: post
+          cors: true
+  createTemplate:
+    handler: handlers/createTemplate.handler
+    events:
+      - http:
+          path: /emails/template
+          method: post
+          cors: true
+
+plugins:
+  - serverless-offline

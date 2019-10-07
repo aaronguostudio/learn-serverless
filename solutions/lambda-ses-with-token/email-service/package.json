@@ -1,0 +1,19 @@
+{
+  "name": "email-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "dependencies": {
+    "aws-sdk": "^2.542.0"
+  },
+  "devDependencies": {
+    "serverless-offline": "^5.12.0"
+  },
+  "scripts": {
+    "start": "sls offline start --skipCacheInvalidation --stage=local --port 5001",
+    "deploy": "sls deploy --stage=dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
